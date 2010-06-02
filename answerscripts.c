@@ -19,10 +19,23 @@
 #define RESPONSE_LINE_LENGTH 4096
 #define HOOK_SCRIPT "answerscripts.exe"
 
+#ifdef PTHREAD
+	#include <pthread.h>
+#endif
+
 char *buff = NULL;
 char *hook_script = NULL;
 char response[RESPONSE_LINE_LENGTH+1];
 int i;
+
+void *answerscripts_process_message(void *conv) {
+	FILE* pipe = popen(hook_script, "r"); //TODO: process scripts and send response asynchronously
+	while (pipe && fgets(response, RESPONSE_LINE_LENGTH, pipe)) {
+		for(i=0;response[i];i++) if(response[i]=='\n') response[i]=0;
+		purple_conv_im_send(purple_conversation_get_im_data((PurpleConversation *)conv), response);
+	}
+	pclose(pipe);
+}
 
 static void
 received_im_msg_cb(PurpleAccount * account, char *who, char *buffer,
@@ -38,12 +51,14 @@ void *data) {
 	setenv("PURPLE_FROM", who, 1);
 	setenv("PURPLE_MSG", buff, 1);
 
-	FILE* pipe = popen(hook_script, "r"); //TODO: process scripts and send response asynchronously
-	while (pipe && fgets(response, RESPONSE_LINE_LENGTH, pipe)) {
-		for(i=0;response[i];i++) if(response[i]=='\n') response[i]=0;
-		purple_conv_im_send(purple_conversation_get_im_data(conv), response);
-	}
-	pclose(pipe);
+	#ifndef PTHREAD
+		answerscripts_process_message((void *)conv);
+	#else
+		pthread_t t;
+		puts("new thread...");
+		pthread_create(&t, NULL, answerscripts_process_message, (void *)conv);
+		puts("new thread created!");
+	#endif
 }
 
 
