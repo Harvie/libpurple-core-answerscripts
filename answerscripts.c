@@ -15,10 +15,17 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <errno.h>
 
 #define ANSWERSCRIPT "answerscripts.exe"
 #define ANSWERSCRIPTS_TIMEOUT_INTERVAL 250
 #define ANSWERSCRIPTS_LINE_LENGTH 4096
+
+//#define __WIN32__
+
+#ifndef __WIN32__
+	#include <fcntl.h>
+#endif
 
 char *buff = NULL;
 char *hook_script = NULL;
@@ -30,15 +37,19 @@ typedef struct {
   PurpleConversation *conv;
 } answerscripts_job;
 
-int answerscripts_process_message(answerscripts_job *job) {
-	//TODO: process scripts and send response asynchronously
+int answerscripts_process_message_cb(answerscripts_job *job) {
 	FILE *pipe = job->pipe;
 	PurpleConversation *conv = job->conv;
 
-	if (pipe && fgets(response, ANSWERSCRIPTS_LINE_LENGTH, pipe)) {
+	if (pipe && !feof(pipe)) {
+		if(!fgets(response, ANSWERSCRIPTS_LINE_LENGTH, pipe)
+			&& (errno == EWOULDBLOCK || errno == EAGAIN)
+		) return 1;
+
 		for(i=0;response[i];i++) if(response[i]=='\n') response[i]=0;
 		purple_conv_im_send(purple_conversation_get_im_data(conv), response);
-		return 1;
+
+		if(!feof(pipe)) return 1;
 	}
 	pclose(pipe);
 	free(job);
@@ -63,7 +74,12 @@ received_im_msg_cb(PurpleAccount *account, char *who, char *buffer, PurpleConver
 	job->pipe = popen(hook_script, "r");
 	job->conv = conv;
 
-	purple_timeout_add(ANSWERSCRIPTS_TIMEOUT_INTERVAL, answerscripts_process_message, (gpointer) job);
+	#ifndef __WIN32__
+		int fflags = fcntl(fileno(job->pipe), F_GETFL, 0);
+		fcntl(fileno(job->pipe), F_SETFL, fflags | O_NONBLOCK);
+	#endif
+
+	purple_timeout_add(ANSWERSCRIPTS_TIMEOUT_INTERVAL, (GSourceFunc) answerscripts_process_message_cb, (gpointer) job);
 
 }
 
