@@ -100,7 +100,7 @@ static PurplePluginInfo info = {
 
 	"core-answerscripts",
 	"AnswerScripts",
-	"0.1.1",
+	"0.2",
 	"Framework for hooking scripts to received messages for various libpurple clients",
 	"This plugin will call ~/.purple/" ANSWERSCRIPT " (or wherever purple_user_dir() points) "
 		"script (or any executable) for each single message called."
