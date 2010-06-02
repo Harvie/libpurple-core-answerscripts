@@ -24,32 +24,29 @@ LIBTOOL := libtool
 ifeq ($(PREFIX),)
   LIB_INSTALL_DIR = $(HOME)/.purple/plugins
 else
-  LIB_INSTALL_DIR = $(PREFIX)/lib/pidgin
+  LIB_INSTALL_DIR = $(PREFIX)/lib/purple-2/
 endif
 
-PIDGIN_AUTOANSWER = answerscripts
+PLUGIN_NAME = answerscripts
 
-PIDGIN_CFLAGS  = $(shell pkg-config pidgin --cflags)
-GTK_CFLAGS   = $(shell pkg-config gtk+-2.0 --cflags)
-PIDGIN_LIBS    = $(shell pkg-config pidgin --libs)
-GTK_LIBS     = $(shell pkg-config gtk+-2.0 --libs)
-PIDGIN_LIBDIR  = $(shell pkg-config --variable=libdir pidgin)/pidgin
+PURPLE_CFLAGS  = $(shell pkg-config purple --cflags)
+PURPLE_LIBS    = $(shell pkg-config purple --libs)
 
-all: $(PIDGIN_AUTOANSWER).so
+all: $(PLUGIN_NAME).so
 
 install: all
 	mkdir -p $(LIB_INSTALL_DIR)
-	cp $(PIDGIN_AUTOANSWER).so $(LIB_INSTALL_DIR)
+	cp $(PLUGIN_NAME).so $(LIB_INSTALL_DIR)
 
-$(PIDGIN_AUTOANSWER).so: $(PIDGIN_AUTOANSWER).o
-	$(CC) -shared $(CFLAGS) $< -o $@ $(PIDGIN_LIBS) $(GTK_LIBS) -Wl,--export-dynamic -Wl,-soname
+$(PLUGIN_NAME).so: $(PLUGIN_NAME).o
+	$(CC) -shared $(CFLAGS) $< -o $@ $(PURPLE_LIBS) $(GTK_LIBS) -Wl,--export-dynamic -Wl,-soname
 
-$(PIDGIN_AUTOANSWER).o:$(PIDGIN_AUTOANSWER).c 
-	$(CC) $(CFLAGS) -fPIC -c $< -o $@ $(PIDGIN_CFLAGS) $(GTK_CFLAGS) -DHAVE_CONFIG_H
+$(PLUGIN_NAME).o:$(PLUGIN_NAME).c 
+	$(CC) $(CFLAGS) -fPIC -c $< -o $@ $(PURPLE_CFLAGS) $(GTK_CFLAGS) -DHAVE_CONFIG_H
 
 clean:
 	rm -rf *.o *.c~ *.h~ *.so *.la .libs
 
 user:
 	cp -r purple/* $(HOME)/.purple/
-	mv $(HOME)/.purple/$(PIDGIN_AUTOANSWER).sh $(HOME)/.purple/$(PIDGIN_AUTOANSWER).exe
+	mv $(HOME)/.purple/$(PLUGIN_NAME).sh $(HOME)/.purple/$(PLUGIN_NAME).exe

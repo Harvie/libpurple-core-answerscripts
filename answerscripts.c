@@ -1,15 +1,13 @@
+//#define __WIN32__
 #define PURPLE_PLUGINS
 
 /* Purple headers */
 #include <libpurple/debug.h>
 #include <libpurple/version.h>
 #include <libpurple/conversation.h>
-#include <libpurple/debug.h>
-#include <libpurple/log.h>
+//#include <libpurple/log.h>
 #include <libpurple/plugin.h>
-#include <libpurple/pluginpref.h>
-#include <libpurple/prefs.h>
-#include <libpurple/signals.h>
+//#include <libpurple/signals.h>
 #include <libpurple/util.h>
 #include <libpurple/notify.h>
 
@@ -17,15 +15,13 @@
 #include <stdlib.h>
 #include <errno.h>
 
-#define ANSWERSCRIPT "answerscripts.exe"
-#define ANSWERSCRIPTS_TIMEOUT_INTERVAL 250
-#define ANSWERSCRIPTS_LINE_LENGTH 4096
-
-//#define __WIN32__
-
 #ifndef __WIN32__
 	#include <fcntl.h>
 #endif
+
+#define ANSWERSCRIPT "answerscripts.exe"
+#define ANSWERSCRIPTS_TIMEOUT_INTERVAL 250
+#define ANSWERSCRIPTS_LINE_LENGTH 4096
 
 char *buff = NULL;
 char *hook_script = NULL;
@@ -56,11 +52,8 @@ int answerscripts_process_message_cb(answerscripts_job *job) {
 	return 0;
 }
 
-static void
-received_im_msg_cb(PurpleAccount *account, char *who, char *buffer, PurpleConversation *conv, PurpleMessageFlags flags, void *data) {
-
-	/* A workaround to avoid skipping of the first message as a result on NULL-conv: */
-	if (conv == NULL) conv = purple_conversation_new(PURPLE_CONV_TYPE_IM, account, who);
+static void received_im_msg_cb(PurpleAccount *account, char *who, char *buffer, PurpleConversation *conv, PurpleMessageFlags flags, void *data) {
+	if (conv == NULL) conv = purple_conversation_new(PURPLE_CONV_TYPE_IM, account, who); //* A workaround to avoid skipping of the first message as a result on NULL-conv: */
 
 	buff = purple_markup_strip_html(buffer);
 	//printf("\nHarvie received: %s: %s\n", who, buff); //debug
@@ -80,24 +73,19 @@ received_im_msg_cb(PurpleAccount *account, char *who, char *buffer, PurpleConver
 	#endif
 
 	purple_timeout_add(ANSWERSCRIPTS_TIMEOUT_INTERVAL, (GSourceFunc) answerscripts_process_message_cb, (gpointer) job);
-
 }
 
 
 static gboolean plugin_load(PurplePlugin * plugin) {
 	asprintf(&hook_script,"%s/%s",purple_user_dir(),ANSWERSCRIPT);
-
 	void *conv_handle = purple_conversations_get_handle();
-
-	purple_signal_connect(conv_handle, "received-im-msg",
-			      plugin, PURPLE_CALLBACK(received_im_msg_cb),
-			      NULL);
-	return TRUE;
+	purple_signal_connect(conv_handle, "received-im-msg", plugin, PURPLE_CALLBACK(received_im_msg_cb), NULL);
+	return 0;
 }
 
 static gboolean plugin_unload(PurplePlugin * plugin) {
 	free(hook_script);
-	return TRUE;
+	return 0;
 }
 
 static PurplePluginInfo info = {
