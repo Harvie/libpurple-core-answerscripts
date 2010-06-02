@@ -16,31 +16,38 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define RESPONSE_LINE_LENGTH 4096
-#define HOOK_SCRIPT "answerscripts.exe"
-
-#ifdef PTHREAD
-	#include <pthread.h>
-#endif
+#define ANSWERSCRIPT "answerscripts.exe"
+#define ANSWERSCRIPTS_TIMEOUT_INTERVAL 250
+#define ANSWERSCRIPTS_LINE_LENGTH 4096
 
 char *buff = NULL;
 char *hook_script = NULL;
-char response[RESPONSE_LINE_LENGTH+1];
+char response[ANSWERSCRIPTS_LINE_LENGTH+1];
 int i;
 
-void *answerscripts_process_message(void *conv) {
-	FILE* pipe = popen(hook_script, "r"); //TODO: process scripts and send response asynchronously
-	while (pipe && fgets(response, RESPONSE_LINE_LENGTH, pipe)) {
+typedef struct {
+  FILE *pipe;
+  PurpleConversation *conv;
+} answerscripts_job;
+
+int answerscripts_process_message(answerscripts_job *job) {
+	//TODO: process scripts and send response asynchronously
+	FILE *pipe = job->pipe;
+	PurpleConversation *conv = job->conv;
+
+	if (pipe && fgets(response, ANSWERSCRIPTS_LINE_LENGTH, pipe)) {
 		for(i=0;response[i];i++) if(response[i]=='\n') response[i]=0;
-		purple_conv_im_send(purple_conversation_get_im_data((PurpleConversation *)conv), response);
+		purple_conv_im_send(purple_conversation_get_im_data(conv), response);
+		return 1;
 	}
 	pclose(pipe);
+	free(job);
+	return 0;
 }
 
 static void
-received_im_msg_cb(PurpleAccount * account, char *who, char *buffer,
-PurpleConversation * conv, PurpleMessageFlags flags,
-void *data) {
+received_im_msg_cb(PurpleAccount *account, char *who, char *buffer, PurpleConversation *conv, PurpleMessageFlags flags, void *data) {
+
 	/* A workaround to avoid skipping of the first message as a result on NULL-conv: */
 	if (conv == NULL) conv = purple_conversation_new(PURPLE_CONV_TYPE_IM, account, who);
 
@@ -51,19 +58,18 @@ void *data) {
 	setenv("PURPLE_FROM", who, 1);
 	setenv("PURPLE_MSG", buff, 1);
 
-	#ifndef PTHREAD
-		answerscripts_process_message((void *)conv);
-	#else
-		pthread_t t;
-		puts("new thread...");
-		pthread_create(&t, NULL, answerscripts_process_message, (void *)conv);
-		puts("new thread created!");
-	#endif
+
+	answerscripts_job *job = (answerscripts_job*) malloc(sizeof(answerscripts_job));
+	job->pipe = popen(hook_script, "r");
+	job->conv = conv;
+
+	purple_timeout_add(ANSWERSCRIPTS_TIMEOUT_INTERVAL, answerscripts_process_message, (gpointer) job);
+
 }
 
 
 static gboolean plugin_load(PurplePlugin * plugin) {
-	asprintf(&hook_script,"%s/%s",purple_user_dir(),HOOK_SCRIPT);
+	asprintf(&hook_script,"%s/%s",purple_user_dir(),ANSWERSCRIPT);
 
 	void *conv_handle = purple_conversations_get_handle();
 
@@ -92,7 +98,7 @@ static PurplePluginInfo info = {
 	"AnswerScripts",
 	"0.1",
 	"Framework for hooking scripts to received messages for various libpurple clients",
-	"This plugin will call ~/.purple/" HOOK_SCRIPT " (or wherever purple_user_dir() points) "
+	"This plugin will call ~/.purple/" ANSWERSCRIPT " (or wherever purple_user_dir() points) "
 		"script (or any executable) for each single message called."
 		"Envinronment values PURPLE_MSG and PURPLE_FROM will be set to carry "
 		"informations about message text and sender so script can respond to that message. "
