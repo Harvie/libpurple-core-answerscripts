@@ -21,8 +21,6 @@
 CC := gcc
 LIBTOOL := libtool
 
-#CFLAGS+=-lpthread -DPTHREAD
-
 ifeq ($(PREFIX),)
   LIB_INSTALL_DIR = $(HOME)/.purple/plugins
 else
