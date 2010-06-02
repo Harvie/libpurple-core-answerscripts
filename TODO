@@ -1,0 +1,5 @@
+TODO:
+	* right now pidgin shows response before request (just on our side of course :-)
+  * process everything asynchronously
+	* general speed improvement
+	* more example scripts (user contributions welcome)
