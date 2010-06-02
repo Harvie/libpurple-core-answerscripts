@@ -12,4 +12,5 @@ switch ($ENV{PURPLE_MSG}) {
 	case /^!google/	{ print "UTFG Yourself: http://google.com/"; }
 	case /^!uptime$/	{ print qx{uptime}; }
 	case /^!date$/	{ print qx{date}; }
+	case /^!dmesg$/	{ print qx{ dmesg | tail -n 5 | tr '\n' '^' } }
 }
