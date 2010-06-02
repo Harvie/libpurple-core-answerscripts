@@ -52,3 +52,4 @@ clean:
 
 user:
 	cp -r purple/* $(HOME)/.purple/
+	mv $(HOME)/.purple/$(PIDGIN_AUTOANSWER).sh $(HOME)/.purple/$(PIDGIN_AUTOANSWER).exe
