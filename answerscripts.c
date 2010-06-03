@@ -1,15 +1,7 @@
 //#define __WIN32__
-#define PURPLE_PLUGINS
-
-/* Purple headers */
-#include <libpurple/debug.h>
-#include <libpurple/version.h>
-#include <libpurple/conversation.h>
-//#include <libpurple/log.h>
-#include <libpurple/plugin.h>
-//#include <libpurple/signals.h>
-#include <libpurple/util.h>
-#include <libpurple/notify.h>
+#define ANSWERSCRIPT "answerscripts.exe"
+#define ANSWERSCRIPTS_TIMEOUT_INTERVAL 250
+#define ANSWERSCRIPTS_LINE_LENGTH 4096
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -19,9 +11,14 @@
 	#include <fcntl.h>
 #endif
 
-#define ANSWERSCRIPT "answerscripts.exe"
-#define ANSWERSCRIPTS_TIMEOUT_INTERVAL 250
-#define ANSWERSCRIPTS_LINE_LENGTH 4096
+/* Purple plugin */
+#define PURPLE_PLUGINS
+#include <libpurple/debug.h>
+#include <libpurple/version.h>
+#include <libpurple/conversation.h>
+#include <libpurple/plugin.h>
+#include <libpurple/signals.h>
+#include <libpurple/util.h>
 
 char *buff = NULL;
 char *hook_script = NULL;
@@ -80,12 +77,12 @@ static gboolean plugin_load(PurplePlugin * plugin) {
 	asprintf(&hook_script,"%s/%s",purple_user_dir(),ANSWERSCRIPT);
 	void *conv_handle = purple_conversations_get_handle();
 	purple_signal_connect(conv_handle, "received-im-msg", plugin, PURPLE_CALLBACK(received_im_msg_cb), NULL);
-	return 0;
+	return TRUE;
 }
 
 static gboolean plugin_unload(PurplePlugin * plugin) {
 	free(hook_script);
-	return 0;
+	return TRUE;
 }
 
 static PurplePluginInfo info = {
@@ -100,16 +97,17 @@ static PurplePluginInfo info = {
 
 	"core-answerscripts",
 	"AnswerScripts",
-	"0.2",
-	"Framework for hooking scripts to received messages for various libpurple clients",
-	"This plugin will call ~/.purple/" ANSWERSCRIPT " (or wherever purple_user_dir() points) "
-		"script (or any executable) for each single message called."
-		"Envinronment values PURPLE_MSG and PURPLE_FROM will be set to carry "
-		"informations about message text and sender so script can respond to that message. "
-		"Any text printed to STDOUT by the script will be sent back as answer to message. "
-		"Please see example scripts for more informations...",
+	"0.2.1",
+	"Framework for hooking scripts to process received messages for libpurple clients",
+	"This plugin will execute script ~/.purple/" ANSWERSCRIPT " "
+		"or any other executable called  " ANSWERSCRIPT " and found in purple_user_dir() "
+		"for each single instant message received.\n"
+		"\n- Envinronment values PURPLE_MSG and PURPLE_FROM will be set to carry "
+		"informations about message text and sender so script can respond to that message."
+		"\n- Any text printed to STDOUT by the script will be sent back as answer to message."
+		"\n\nPlease see example scripts, documentation or source code for more informations...",
 	"Harvie <harvie@email.cz>",
-	"http://github.com/harvie",
+	"http://github.com/harvie/libpurple-core-answerscripts",
 
 	plugin_load,
 	plugin_unload,

@@ -39,10 +39,10 @@ install: all
 	cp $(PLUGIN_NAME).so $(LIB_INSTALL_DIR)
 
 $(PLUGIN_NAME).so: $(PLUGIN_NAME).o
-	$(CC) -shared $(CFLAGS) $< -o $@ $(PURPLE_LIBS) $(GTK_LIBS) -Wl,--export-dynamic -Wl,-soname
+	$(CC) -shared $(CFLAGS) $< -o $@ $(PURPLE_LIBS) $(PIDGIN_LIBS) $(GTK_LIBS) -Wl,--export-dynamic -Wl,-soname
 
 $(PLUGIN_NAME).o:$(PLUGIN_NAME).c 
-	$(CC) $(CFLAGS) -fPIC -c $< -o $@ $(PURPLE_CFLAGS) $(GTK_CFLAGS) -DHAVE_CONFIG_H
+	$(CC) $(CFLAGS) -fPIC -c $< -o $@ $(PURPLE_CFLAGS) $(PIDGIN_CFLAGS) $(GTK_CFLAGS) -DHAVE_CONFIG_H
 
 clean:
 	rm -rf *.o *.c~ *.h~ *.so *.la .libs
