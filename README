@@ -1,16 +1,14 @@
 libPurple core-answerscripts plugin
-	Framework for hooking scripts to received messages for various libpurple clients
+	- Framework for hooking scripts to respond received messages for various libpurple clients such as pidgin or finch
+	- This simple plugin just passes every single message received by any libPurple-based client (pidgin,finch) to sript(s) in user's home directory... So you can add various hooks to your pidgin or finch without need of writing and compiling own C plugin or messing with buggy perl plugin and restarting client after each change in plugin.
+	- There are already few sample (answer)scripts in purple directory, so you can check how easy it is to write some script for pidgin or finch...
 
-This simple plugin just passes every single message received by any libPurple-based client (pidgin,finch) to sript(s) in user's home directory... So you can add various hooks to your pidgin or finch without need of writing and compiling own C plugin or messing with buggy perl plugin and restarting client after each change in plugin.
-
-There are already few sample (answer)scripts in purple directory, so you can check how easy it is to write some script for pidgin or finch...
-
-
-The libpurple header files are needed to compile the plugin.
 
 Building & installation:
 
-To build and install :
+- The libpurple header files are needed to compile the plugin.
+
+- To build and install :
 	You can compile the plugin using
 	$ make
 	and install it with
@@ -19,10 +17,14 @@ To build and install :
 	$ make user
 	Install main script and sample answerscripts to ~/.purple/answerscripts.d/
 
-To install it for everybody on your computer,
+- To install it for everybody on your computer,
 	$ make
 	$ su
-	# make install PREFIX="/path/to/pidgin" (this command as root user)
-	generally /path/to/pidgin is /usr or /usr/local. If you don't know the path then you can find out using
-	$ whereis pidgin
-	and look for the part before "/lib/pidgin".
+	# make install PREFIX="/path/to/libpurple" (this command as root user)
+	generally /path/to/libpurple is /usr or /usr/local. If you don't know the path then you can find out using
+	$ whereis libpurple
+	and look for the part before "/lib/libpurple.so".
+
+
+Installing from packages:
+	- ArchLinux: http://aur.archlinux.org/packages.php?ID=37942
