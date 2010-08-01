@@ -49,4 +49,4 @@ clean:
 
 user:
 	cp -r purple/* $(HOME)/.purple/
-	mv $(HOME)/.purple/$(PLUGIN_NAME).sh $(HOME)/.purple/$(PLUGIN_NAME).exe
+	mv $(HOME)/.purple/$(PLUGIN_NAME).sh $(HOME)/.purple/$(PLUGIN_NAME)

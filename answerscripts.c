@@ -1,5 +1,10 @@
 //#define __WIN32__
-#define ANSWERSCRIPT "answerscripts.exe"
+#ifndef __WIN32__
+	#define ANSWERSCRIPT_EXT ""
+#else
+	#define ANSWERSCRIPT_EXT ".exe"
+#endif
+#define ANSWERSCRIPT "answerscripts" ANSWERSCRIPT_EXT
 #define ANSWERSCRIPTS_TIMEOUT_INTERVAL 250
 #define ANSWERSCRIPTS_LINE_LENGTH 4096
 
@@ -97,7 +102,7 @@ static PurplePluginInfo info = {
 
 	"core-answerscripts",
 	"AnswerScripts",
-	"0.2.1",
+	"0.2.2",
 	"Framework for hooking scripts to process received messages for libpurple clients",
 	"This plugin will execute script ~/.purple/" ANSWERSCRIPT " "
 		"or any other executable called  " ANSWERSCRIPT " and found in purple_user_dir() "
