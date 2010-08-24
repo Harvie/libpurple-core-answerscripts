@@ -25,7 +25,7 @@
 #include <libpurple/signals.h>
 #include <libpurple/util.h>
 
-char *buff = NULL;
+char *message = NULL;
 char *hook_script = NULL;
 char response[ANSWERSCRIPTS_LINE_LENGTH+1];
 int i;
@@ -57,8 +57,9 @@ int answerscripts_process_message_cb(answerscripts_job *job) {
 static void received_im_msg_cb(PurpleAccount *account, char *who, char *buffer, PurpleConversation *conv, PurpleMessageFlags flags, void *data) {
 	if (conv == NULL) conv = purple_conversation_new(PURPLE_CONV_TYPE_IM, account, who); //* A workaround to avoid skipping of the first message as a result on NULL-conv: */
 
-	buff = purple_markup_strip_html(buffer);
-	//printf("\nHarvie received: %s: %s\n", who, buff); //debug
+	//Get message
+	message = purple_markup_strip_html(buffer);
+	//printf("\nHarvie received: %s: %s\n", who, message); //debug
 	//purple_conv_im_send(purple_conversation_get_im_data(conv), ":-*"); //debug
 
 	//Get status
@@ -77,11 +78,13 @@ static void received_im_msg_cb(PurpleAccount *account, char *who, char *buffer, 
 		status_msg = (char *) purple_savedstatus_get_message(purple_savedstatus_get_current());
 	}
 
+	//Export variables to environment
 	setenv("PURPLE_FROM", who, 1);
-	setenv("PURPLE_MSG", buff, 1);
+	setenv("PURPLE_MSG", message, 1);
 	setenv("PURPLE_STATUS", status_id, 1);
 	setenv("PURPLE_STATUS_MSG", status_msg, 1);
 
+	//Launch job on background
 	answerscripts_job *job = (answerscripts_job*) malloc(sizeof(answerscripts_job));
 	job->pipe = popen(hook_script, "r");
 	job->conv = conv;
@@ -93,7 +96,6 @@ static void received_im_msg_cb(PurpleAccount *account, char *who, char *buffer, 
 
 	purple_timeout_add(ANSWERSCRIPTS_TIMEOUT_INTERVAL, (GSourceFunc) answerscripts_process_message_cb, (gpointer) job);
 }
-
 
 static gboolean plugin_load(PurplePlugin * plugin) {
 	asprintf(&hook_script,"%s/%s",purple_user_dir(),ANSWERSCRIPT);
