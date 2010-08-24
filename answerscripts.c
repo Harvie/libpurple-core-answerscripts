@@ -122,7 +122,7 @@ static PurplePluginInfo info = {
 
 	"core-answerscripts",
 	"AnswerScripts",
-	"0.2.2",
+	"0.3.0",
 	"Framework for hooking scripts to process received messages for libpurple clients",
 	"This plugin will execute script ~/.purple/" ANSWERSCRIPT " "
 		"or any other executable called  " ANSWERSCRIPT " and found in purple_user_dir() "
