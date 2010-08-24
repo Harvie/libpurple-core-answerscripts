@@ -7,7 +7,7 @@
 #define ANSWERSCRIPT "answerscripts" ANSWERSCRIPT_EXT
 #define ANSWERSCRIPTS_TIMEOUT_INTERVAL 250
 #define ANSWERSCRIPTS_LINE_LENGTH 4096
-#define ENV_PREFIX "PURPLE_"
+#define ENV_PREFIX "ANSW_"
 
 #include <stdio.h>
 #include <stdlib.h>
