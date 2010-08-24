@@ -7,6 +7,7 @@
 #define ANSWERSCRIPT "answerscripts" ANSWERSCRIPT_EXT
 #define ANSWERSCRIPTS_TIMEOUT_INTERVAL 250
 #define ANSWERSCRIPTS_LINE_LENGTH 4096
+#define ENV_PREFIX "PURPLE_"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -79,10 +80,10 @@ static void received_im_msg_cb(PurpleAccount *account, char *who, char *buffer, 
 	}
 
 	//Export variables to environment
-	setenv("PURPLE_FROM", who, 1);
-	setenv("PURPLE_MSG", message, 1);
-	setenv("PURPLE_STATUS", status_id, 1);
-	setenv("PURPLE_STATUS_MSG", status_msg, 1);
+	setenv(ENV_PREFIX "FROM", who, 1);
+	setenv(ENV_PREFIX "MSG", message, 1);
+	setenv(ENV_PREFIX "STATUS", status_id, 1);
+	setenv(ENV_PREFIX "STATUS_MSG", status_msg, 1);
 
 	//Launch job on background
 	answerscripts_job *job = (answerscripts_job*) malloc(sizeof(answerscripts_job));
