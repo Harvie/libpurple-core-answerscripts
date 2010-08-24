@@ -61,9 +61,26 @@ static void received_im_msg_cb(PurpleAccount *account, char *who, char *buffer, 
 	//printf("\nHarvie received: %s: %s\n", who, buff); //debug
 	//purple_conv_im_send(purple_conversation_get_im_data(conv), ":-*"); //debug
 
+	//Get status
+	PurpleStatus *status = purple_account_get_active_status(account);
+	PurpleStatusType *type = purple_status_get_type(status);
+
+	//Get status id
+	const char *status_id = NULL;
+	status_id = purple_primitive_get_id_from_type(purple_status_type_get_primitive(type));
+
+	//Get status message
+	const char *status_msg = NULL;
+	if (purple_status_type_get_attr(type, "message") != NULL) {
+		status_msg = purple_status_get_attr_string(status, "message");
+	} else {
+		status_msg = (char *) purple_savedstatus_get_message(purple_savedstatus_get_current());
+	}
+
 	setenv("PURPLE_FROM", who, 1);
 	setenv("PURPLE_MSG", buff, 1);
-
+	setenv("PURPLE_STATUS", status_id, 1);
+	setenv("PURPLE_STATUS_MSG", status_msg, 1);
 
 	answerscripts_job *job = (answerscripts_job*) malloc(sizeof(answerscripts_job));
 	job->pipe = popen(hook_script, "r");
