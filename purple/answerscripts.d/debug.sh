@@ -1,3 +1,4 @@
 #!/bin/sh
 #Debug
-echo "<$PURPLE_FROM> $PURPLE_MSG" >&2;
+echo "<$ANSW_FROM> $ANSW_MSG" >&2;
+echo "($ANSW_STATUS: $ANSW_STATUS_MSG)" >&2;

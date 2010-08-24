@@ -1,3 +1,3 @@
 #!/bin/sh
 #AutoKiss :-* (just wanna be polite)
-echo "$PURPLE_MSG" | grep -o ':-\*';
+echo $(echo "$ANSW_MSG" | grep -Eo ':-\*|\*IN LOVE\*|:-\{\}|\*KISSING\*');
