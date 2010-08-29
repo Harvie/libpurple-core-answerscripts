@@ -129,16 +129,21 @@ static PurplePluginInfo info = {
 
 	"core-answerscripts",
 	"AnswerScripts",
-	"0.3.0",
+	"0.3.1",
 	"Framework for hooking scripts to process received messages for libpurple clients",
-	"This plugin will execute script ~/.purple/" ANSWERSCRIPT " "
-		"or any other executable called  " ANSWERSCRIPT " and found in purple_user_dir() "
-		"for each single instant message received.\n"
-		"\n- Envinronment values PURPLE_MSG and PURPLE_FROM will be set to carry "
-		"informations about message text and sender so script can respond to that message."
-		"\n- Any text printed to STDOUT by the script will be sent back as answer to message."
-		"\n\nPlease see example scripts, documentation or source code for more informations...",
-	"Harvie <harvie@email.cz>",
+	"\nThis plugin will execute script \"~/.purple/" ANSWERSCRIPT "\" "
+		"(or any other executable called \"" ANSWERSCRIPT "\" and found in purple_user_dir()) "
+		"each time when instant message is received.\n"
+		"\n- Any text printed to STDOUT by this script will be sent back as answer to received message."
+		"\n- Following environment values will be set, so script can use them for responding:\n"
+		"\t- ANSW_MSG\n"
+		"\t- ANSW_FROM\n"
+		"\t- ANSW_PROTOCOL\n"
+		"\t- ANSW_STATUS\n"
+		"\t- ANSW_STATUS_MSG\n"
+		"\nPlease see sample scripts, documentation, website and source code for more informations...\n"
+		"\n(-; Peace ;-)\n",
+	"Tomas Mudrunka <harvie@email.cz>",
 	"http://github.com/harvie/libpurple-core-answerscripts",
 
 	plugin_load,
