@@ -7,11 +7,11 @@
 
 There are lot of hacks that you can do with this simple framework if you know some basic scripting. eg.:
 
-- **Forward your instant messages** to email, SMS gateway, text-to-speach (eg. espeak) or something...
-  - Smart auto-replying messages based on regular expressions
-  - Remote control your music player (or anything else on your computer) using instant messages
-- Simple IRC/Jabber/ICQ bot (currently accepts PM only, you can run finch in screen on server)
-- Providing some service (Searching web, Weather info, System status, RPG game...)
+- **Map any response to any incomming message** (You can even use some substitutions and regexes)
+- **Forward your instant messages** to email, SMS gateway, text-to-speech (eg. espeak) or something...
+- **Remote control** your music player (or anything else on your computer) using instant messages
+- **Simple IRC/Jabber/ICQ bot** (currently accepts PM only, you can run finch in screen on server)
+- Providing some **service** (Searching web, Weather info, System status, RPG game...)
 - BackDoor (**even unintentional one - you've been warned**)
 - Loging and analyzing messages
 - Connect IM with Arduino
