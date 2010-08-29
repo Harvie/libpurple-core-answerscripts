@@ -1,4 +1,5 @@
 #libPurple core-answerscripts plugin
+  * **Most hackable pidgin plugin!**
   * Framework for hooking scripts to **respond received messages** (and maybe bit more in future) for various **libpurple** clients such as **pidgin or finch**
   * This simple plugin just passes every single message received by any libPurple-based client (pidgin,finch) to sript(s) in user's home directory... So **you can add various hooks.**
   * There are already few sample (answer)scripts in ./purple directory, so you can check how easy it is to write some script for pidgin or finch...
@@ -14,7 +15,7 @@ There are lot of hacks that you can do with this simple framework if you know so
 - Providing some **service** (Searching web, Weather info, System status, RPG game...)
 - BackDoor (**even unintentional one - you've been warned**)
 - Loging and analyzing messages
-- Connect IM with Arduino
+- Connect IM with **Arduino**
 - Annoy everyone with spam (and probably **get banned everywhere**)
 - **Anything else that you can imagine...** (i'm looking forward to hearing your stories)
 
