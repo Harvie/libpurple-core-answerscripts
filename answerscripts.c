@@ -17,6 +17,8 @@
 
 #ifndef __WIN32__
 	#include <fcntl.h>
+#else
+	#include <windows.h>
 #endif
 
 /* Purple plugin */
@@ -44,7 +46,7 @@ int answerscripts_process_message_cb(answerscripts_job *job) {
 
 	if (pipe && !feof(pipe)) {
 		if(!fgets(response, ANSWERSCRIPTS_LINE_LENGTH, pipe)
-			&& (errno == EWOULDBLOCK || errno == EAGAIN)
+			&& (errno == EWOULDBLOCK || errno == EAGAIN) //WARNING! Not compatible with windows :-(
 		) return 1;
 
 		for(i=0;response[i];i++) if(response[i]=='\n') response[i]=0;
@@ -100,6 +102,8 @@ static void received_im_msg_cb(PurpleAccount *account, char *who, char *buffer, 
 	#ifndef __WIN32__
 		int fflags = fcntl(fileno(job->pipe), F_GETFL, 0);
 		fcntl(fileno(job->pipe), F_SETFL, fflags | O_NONBLOCK);
+	#else
+		//WARNING! Somehow implement FILE_FLAG_OVERLAPPED & FILE_FLAG_NO_BUFFERING support on windows
 	#endif
 
 	purple_timeout_add(ANSWERSCRIPTS_TIMEOUT_INTERVAL, (GSourceFunc) answerscripts_process_message_cb, (gpointer) job);
