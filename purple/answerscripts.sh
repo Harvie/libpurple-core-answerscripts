@@ -2,8 +2,9 @@
 
 #	This file is called for every message received by libpurple clients (pidgin,finch,...)
 #		- Following env values are passed to this script:
-#			- ANSW_FROM	(who sent you message)
 #			- ANSW_MSG	(text of the message)
+#			- ANSW_FROM	(who sent you message)
+#			- ANSW_PROTOCOL	(protocol used to deliver the message. eg.: jabber, irc,...)
 #			- ANSW_STATUS	(unique ID of status. eg.: available, away,...)
 #			- ANSW_STATUS_MSG	(status message set by user)
 #		- WARNING: You should mind security (don't let attackers to execute their messages/nicks!)

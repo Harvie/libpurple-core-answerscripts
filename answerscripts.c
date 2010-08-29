@@ -8,10 +8,12 @@
 #define ANSWERSCRIPTS_TIMEOUT_INTERVAL 250
 #define ANSWERSCRIPTS_LINE_LENGTH 4096
 #define ENV_PREFIX "ANSW_"
+#define PROTOCOL_PREFIX "prpl-"
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
+#include <string.h>
 
 #ifndef __WIN32__
 	#include <fcntl.h>
@@ -63,6 +65,10 @@ static void received_im_msg_cb(PurpleAccount *account, char *who, char *buffer, 
 	//printf("\nHarvie received: %s: %s\n", who, message); //debug
 	//purple_conv_im_send(purple_conversation_get_im_data(conv), ":-*"); //debug
 
+	//Get protocol ID
+	const char *protocol_id = purple_account_get_protocol_id(account);
+	if(!strncmp(protocol_id,PROTOCOL_PREFIX,strlen(PROTOCOL_PREFIX))) protocol_id += strlen(PROTOCOL_PREFIX); //trim out protocol prefix (eg.: "prpl-irc" => "irc")
+
 	//Get status
 	PurpleStatus *status = purple_account_get_active_status(account);
 	PurpleStatusType *type = purple_status_get_type(status);
@@ -80,8 +86,9 @@ static void received_im_msg_cb(PurpleAccount *account, char *who, char *buffer, 
 	}
 
 	//Export variables to environment
-	setenv(ENV_PREFIX "FROM", who, 1);
 	setenv(ENV_PREFIX "MSG", message, 1);
+	setenv(ENV_PREFIX "FROM", who, 1);
+	setenv(ENV_PREFIX "PROTOCOL", protocol_id, 1);
 	setenv(ENV_PREFIX "STATUS", status_id, 1);
 	setenv(ENV_PREFIX "STATUS_MSG", status_msg, 1);
 
