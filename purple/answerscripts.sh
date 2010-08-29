@@ -1,31 +1,8 @@
 #!/bin/sh
-
+#
 #	This file is called for every message received by libpurple clients (pidgin,finch,...)
-#		- Following env values are passed to this script:
-#			- ANSW_MSG	(text of the message)
-#			- ANSW_FROM	(who sent you message)
-#			- ANSW_PROTOCOL	(protocol used to deliver the message. eg.: jabber, irc,...)
-#			- ANSW_STATUS	(unique ID of status. eg.: available, away,...)
-#			- ANSW_STATUS_MSG	(status message set by user)
-#		- WARNING: You should mind security (don't let attackers to execute their messages/nicks!)
-#		- Each line of output is sent as reply to that message
-#		- You can try to rewrite this script in PERL or C for better performance (or different platform)
+#		- You can try to rewrite this script in PERL or C for better performance (or different platform) - let me know
 #		- On M$ Windows answerscripts.exe from libpurple directory will be called instead of this script
-#
-#	Basic example can look like this:
-#		[ "$ANSW_STATUS" != 'available' ] && echo "<$ANSW_FROM> $ANSW_MSG" && echo "My status: $ANSW_STATUS_MSG";
-#
-#	There are lot of hacks that you can do with this simple framework if you know some scripting. eg.:
-#	- Forward your instant messages to email, SMS gateway, text-to-speach (eg. espeak) or something...
-#		- Smart auto-replying messages based on regular expressions
-#		- Remote control your music player (or anything else on your computer) using instant messages
-#	- Simple IRC/Jabber/ICQ bot (accepts PM only, you can run finch in screen on server)
-#	- Providing some service (Searching web, Weather info, System status, RPG game...)
-#	- BackDoor (even unintentional one - you've been warned)
-#	- Loging and analyzing messages
-#	- Connect IM with Arduino
-#	- Annoy everyone with spam (and probably get banned everywhere)
-#	- Anything else that you can imagine...
 #
 #	Maybe you will want to add more hooks for receiving messages, so i've made following script
 #	- It just executes all +x files in answerscripts.d directory so you should do your magic there
