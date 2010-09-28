@@ -67,6 +67,23 @@ static void received_im_msg_cb(PurpleAccount *account, char *who, char *buffer, 
 	//printf("\nHarvie received: %s: %s\n", who, message); //debug
 	//purple_conv_im_send(purple_conversation_get_im_data(conv), ":-*"); //debug
 
+	/* Here are prototypes of some functions interesting to implement github feature request #3
+
+	LOCAL USER:
+	const char* purple_account_get_alias  	(  	const PurpleAccount *   	 account  	 )
+	const gchar* purple_account_get_name_for_display  	(  	const PurpleAccount *   	 account  	 )
+	REMOTE USER (Buddy):
+	const char * 	purple_contact_get_alias (PurpleContact *contact)
+	const char * 	purple_buddy_get_name (const PurpleBuddy *buddy)
+	const char *	purple_buddy_get_alias_only (PurpleBuddy *buddy)
+	const char * 	purple_buddy_get_server_alias (PurpleBuddy *buddy)
+	const char * 	purple_buddy_get_contact_alias (PurpleBuddy *buddy)
+	const char * 	purple_buddy_get_local_alias (PurpleBuddy *buddy)
+	const char * 	purple_buddy_get_alias (PurpleBuddy *buddy)
+	PurpleGroup * 	purple_buddy_get_group (PurpleBuddy *buddy)
+	const char * 	purple_group_get_name (PurpleGroup *group)
+	*/
+
 	//Get protocol ID
 	const char *protocol_id = purple_account_get_protocol_id(account);
 	if(!strncmp(protocol_id,PROTOCOL_PREFIX,strlen(PROTOCOL_PREFIX))) protocol_id += strlen(PROTOCOL_PREFIX); //trim out protocol prefix (eg.: "prpl-irc" => "irc")
