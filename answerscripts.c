@@ -61,6 +61,7 @@ int answerscripts_process_message_cb(answerscripts_job *job) {
 
 static void received_im_msg_cb(PurpleAccount *account, char *who, char *buffer, PurpleConversation *conv, PurpleMessageFlags flags, void *data) {
 	if (conv == NULL) conv = purple_conversation_new(PURPLE_CONV_TYPE_IM, account, who); //* A workaround to avoid skipping of the first message as a result on NULL-conv: */
+	PurpleBuddy *buddy = purple_find_buddy(account, who);
 
 	//Get message
 	message = purple_markup_strip_html(buffer);
@@ -83,6 +84,9 @@ static void received_im_msg_cb(PurpleAccount *account, char *who, char *buffer, 
 	PurpleGroup * 	purple_buddy_get_group (PurpleBuddy *buddy)
 	const char * 	purple_group_get_name (PurpleGroup *group)
 	*/
+
+	//Get buddy group
+	const char *from_group = purple_group_get_name(purple_buddy_get_group(buddy));
 
 	//Get protocol ID
 	const char *protocol_id = purple_account_get_protocol_id(account);
@@ -107,6 +111,7 @@ static void received_im_msg_cb(PurpleAccount *account, char *who, char *buffer, 
 	//Export variables to environment
 	setenv(ENV_PREFIX "MSG", message, 1);
 	setenv(ENV_PREFIX "FROM", who, 1);
+	setenv(ENV_PREFIX "FROM_GROUP", from_group, 1);
 	setenv(ENV_PREFIX "PROTOCOL", protocol_id, 1);
 	setenv(ENV_PREFIX "STATUS", status_id, 1);
 	setenv(ENV_PREFIX "STATUS_MSG", status_msg, 1);
