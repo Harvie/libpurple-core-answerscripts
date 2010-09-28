@@ -65,8 +65,6 @@ static void received_im_msg_cb(PurpleAccount *account, char *who, char *buffer, 
 
 	//Get message
 	message = purple_markup_strip_html(buffer);
-	//printf("\nHarvie received: %s: %s\n", who, message); //debug
-	//purple_conv_im_send(purple_conversation_get_im_data(conv), ":-*"); //debug
 
 	/* Here are prototypes of some functions interesting to implement github feature request #3
 
@@ -90,7 +88,7 @@ static void received_im_msg_cb(PurpleAccount *account, char *who, char *buffer, 
 
 	//Get protocol ID
 	const char *protocol_id = purple_account_get_protocol_id(account);
-	if(!strncmp(protocol_id,PROTOCOL_PREFIX,strlen(PROTOCOL_PREFIX))) protocol_id += strlen(PROTOCOL_PREFIX); //trim out protocol prefix (eg.: "prpl-irc" => "irc")
+	if(!strncmp(protocol_id,PROTOCOL_PREFIX,strlen(PROTOCOL_PREFIX))) protocol_id += strlen(PROTOCOL_PREFIX); //trim out PROTOCOL_PREFIX (eg.: "prpl-irc" => "irc")
 
 	//Get status
 	PurpleStatus *status = purple_account_get_active_status(account);
