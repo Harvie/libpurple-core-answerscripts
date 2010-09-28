@@ -32,8 +32,6 @@
 
 char *message = NULL;
 char *hook_script = NULL;
-char response[ANSWERSCRIPTS_LINE_LENGTH+1];
-int i;
 
 typedef struct {
   FILE *pipe;
@@ -41,6 +39,8 @@ typedef struct {
 } answerscripts_job;
 
 int answerscripts_process_message_cb(answerscripts_job *job) {
+	int i;
+	char response[ANSWERSCRIPTS_LINE_LENGTH+1];
 	FILE *pipe = job->pipe;
 	PurpleConversation *conv = job->conv;
 
