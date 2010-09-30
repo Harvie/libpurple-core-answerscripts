@@ -84,7 +84,7 @@ static void received_im_msg_cb(PurpleAccount *account, char *who, char *buffer, 
 	*/
 
 	//Get buddy group
-	const char *from_group = purple_group_get_name(purple_buddy_get_group(buddy));
+	const char *from_group = purple_group_get_name(purple_buddy_get_group(buddy)); //FIXME: returns "\x18" when user does not belong to some group
 
 	//Get protocol ID
 	const char *protocol_id = purple_account_get_protocol_id(account);
