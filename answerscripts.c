@@ -40,7 +40,7 @@ typedef struct {
 
 int answerscripts_process_message_cb(answerscripts_job *job) {
 	int i;
-	char response[ANSWERSCRIPTS_LINE_LENGTH+1];
+	char response[ANSWERSCRIPTS_LINE_LENGTH+1]; response[0]='\0';
 	FILE *pipe = job->pipe;
 	PurpleConversation *conv = job->conv;
 
@@ -50,7 +50,7 @@ int answerscripts_process_message_cb(answerscripts_job *job) {
 		) return 1;
 
 		for(i=0;response[i];i++) if(response[i]=='\n') response[i]=0;
-		purple_conv_im_send(purple_conversation_get_im_data(conv), response);
+		if(response[0]!='\0') purple_conv_im_send(purple_conversation_get_im_data(conv), response);
 
 		if(!feof(pipe)) return 1;
 	}
