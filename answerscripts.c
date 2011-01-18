@@ -117,6 +117,10 @@ static void received_im_msg_cb(PurpleAccount *account, char *who, char *buffer, 
 	//Launch job on background
 	answerscripts_job *job = (answerscripts_job*) malloc(sizeof(answerscripts_job));
 	job->pipe = popen(hook_script, "r");
+	if(job->pipe == NULL) {
+		fprintf(stderr,"Can't execute %s\n", hook_script);
+		return;
+	}
 	job->conv = conv;
 
 	#ifndef __WIN32__
