@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 #	This file is called for every message received by libpurple clients (pidgin,finch,...)
 #		- You can try to rewrite this script in PERL or C for better performance (or different platform) - let me know
@@ -31,7 +31,7 @@ if test -d "$dir"; then
 
 		#sleep at 49 (this can be replaced by 49-delay.sh, but this should be faster)
 		[ $i -eq 49 ] && {
-			sleep $[ 2 + ($RANDOM % 8) ]; #2-9 seconds of sleep
+			sleep $(( 2 + ($RANDOM % 8) )); #2-9 seconds of sleep
 			continue;
 		}
 
