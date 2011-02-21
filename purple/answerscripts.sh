@@ -12,7 +12,7 @@
 #		- AB?!_ scripts without numbers are NOT executed!
 #		- 00   	executed immediately, zero or single line output (parallel async processing)
 #		- 01-48 executed immediately, multiline output (serial processing)
-#		- 49    delay script (adds random delay to emulate human factor)
+#		- 49    delay script (adds random delay to emulate human factor, no user scripts at this level!)
 #		- 50    executed after delay, zero or single line output (parallel async processing)
 #		- 51-79 executed after delay, multiline output (serial processing)
 #		- 80-99	reserved for future
@@ -31,7 +31,8 @@ if test -d "$dir"; then
 
 		#sleep at 49 (this can be replaced by 49-delay.sh, but this should be faster)
 		[ $i -eq 49 ] && {
-			sleep $(( 2 + ($RANDOM % 8) )); #2-9 seconds of sleep
+			find "$dir"/[5-9][0-9]-* -executable | grep . >/dev/null && #check if it's worth waiting
+				sleep $(( 2 + ($RANDOM % 8) )); #2-9 seconds of sleep
 			continue;
 		}
 
