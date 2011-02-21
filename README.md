@@ -28,7 +28,7 @@ There are lot of hacks that you can do with this simple framework if you know so
     * Following **environment values are passed** to the script:
       * ANSW\_MSG	(text of the message)
       * ANSW\_FROM	(who sent you the message)
-      * ANSW\_FROM\_GROUP	(group which contains that buddy - buggy)
+      * ANSW\_FROM\_GROUP	(group which contains that buddy)
       * ANSW\_PROTOCOL	(protocol used to deliver the message. eg.: xmpp, irc,...)
       * ANSW\_STATUS	(unique ID of status. eg.: available, away,...)
       * ANSW\_STATUS\_MSG	(status message set by user)

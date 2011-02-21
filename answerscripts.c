@@ -90,7 +90,8 @@ static void received_im_msg_cb(PurpleAccount *account, char *who, char *buffer, 
 	setenv(ENV_PREFIX "REMOTE_ALIAS", remote_alias, 1);	//???
 
 	//Get buddy group
-	const char *from_group = purple_group_get_name(purple_buddy_get_group(buddy)); //FIXME: purple_group_get_name() returns "\x18" (or random data!) when user does not belong to some group
+	PurpleGroup *group = purple_buddy_get_group(buddy);
+	const char *from_group = group != NULL ? purple_group_get_name(group) : ""; //return empty string if not in group
 
 	//Get protocol ID
 	const char *protocol_id = purple_account_get_protocol_id(account);
@@ -115,7 +116,7 @@ static void received_im_msg_cb(PurpleAccount *account, char *who, char *buffer, 
 	//Export variables to environment
 	setenv(ENV_PREFIX "MSG", message, 1);	//text of the message
 	setenv(ENV_PREFIX "FROM", who, 1);	//who sent you the message
-	setenv(ENV_PREFIX "FROM_GROUP", from_group, 1);	//group which contains that buddy - buggy
+	setenv(ENV_PREFIX "FROM_GROUP", from_group, 1);	//group which contains that buddy
 	setenv(ENV_PREFIX "PROTOCOL", protocol_id, 1);	//protocol used to deliver the message. eg.: xmpp, irc,...
 	setenv(ENV_PREFIX "STATUS", status_id, 1);	//unique ID of status. eg.: available, away,...
 	setenv(ENV_PREFIX "STATUS_MSG", status_msg, 1);	//status message set by user
