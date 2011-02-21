@@ -71,8 +71,8 @@ static void received_im_msg_cb(PurpleAccount *account, char *who, char *buffer, 
 	//LOCAL USER:
 	const char* local_alias = purple_account_get_alias(account);
 	const char* local_name = (char *) purple_account_get_name_for_display(account);
-	setenv(ENV_PREFIX "LOCAL_NAME", local_name, 1);
-	setenv(ENV_PREFIX "LOCAL_ALIAS", local_alias, 1);
+	setenv(ENV_PREFIX "LOCAL_NAME", local_name, 1);	//Name of local user - untested
+	setenv(ENV_PREFIX "LOCAL_ALIAS", local_alias, 1);	//Alias of local user - untested
 
 	//REMOTE USER (Buddy):
 	//const char * 	purple_contact_get_alias (PurpleContact *contact)
@@ -82,12 +82,12 @@ static void received_im_msg_cb(PurpleAccount *account, char *who, char *buffer, 
 	const char* remote_contact_alias = purple_buddy_get_contact_alias(buddy);
 	const char* remote_local_alias = purple_buddy_get_local_alias(buddy);
 	const char* remote_alias = purple_buddy_get_alias(buddy);
-	setenv(ENV_PREFIX "REMOTE_NAME", remote_name, 1);
-	setenv(ENV_PREFIX "REMOTE_ALIAS_ONLY", remote_alias_only, 1);
-	setenv(ENV_PREFIX "REMOTE_SERVER_ALIAS", remote_server_alias, 1);
-	setenv(ENV_PREFIX "REMOTE_CONTACT_ALIAS", remote_contact_alias, 1);
-	setenv(ENV_PREFIX "REMOTE_LOCAL_ALIAS", remote_local_alias, 1);
-	setenv(ENV_PREFIX "REMOTE_ALIAS", remote_alias, 1);
+	setenv(ENV_PREFIX "REMOTE_NAME", remote_name, 1);	//???
+	setenv(ENV_PREFIX "REMOTE_ALIAS_ONLY", remote_alias_only, 1);	//buggy
+	setenv(ENV_PREFIX "REMOTE_SERVER_ALIAS", remote_server_alias, 1);	//buggy
+	setenv(ENV_PREFIX "REMOTE_CONTACT_ALIAS", remote_contact_alias, 1);	//buggy
+	setenv(ENV_PREFIX "REMOTE_LOCAL_ALIAS", remote_local_alias, 1);	//???
+	setenv(ENV_PREFIX "REMOTE_ALIAS", remote_alias, 1);	//???
 
 	//Get buddy group
 	const char *from_group = purple_group_get_name(purple_buddy_get_group(buddy)); //FIXME: purple_group_get_name() returns "\x18" (or random data!) when user does not belong to some group
@@ -113,12 +113,12 @@ static void received_im_msg_cb(PurpleAccount *account, char *who, char *buffer, 
 	}
 
 	//Export variables to environment
-	setenv(ENV_PREFIX "MSG", message, 1);
-	setenv(ENV_PREFIX "FROM", who, 1);
-	setenv(ENV_PREFIX "FROM_GROUP", from_group, 1);
-	setenv(ENV_PREFIX "PROTOCOL", protocol_id, 1);
-	setenv(ENV_PREFIX "STATUS", status_id, 1);
-	setenv(ENV_PREFIX "STATUS_MSG", status_msg, 1);
+	setenv(ENV_PREFIX "MSG", message, 1);	//text of the message
+	setenv(ENV_PREFIX "FROM", who, 1);	//who sent you the message
+	setenv(ENV_PREFIX "FROM_GROUP", from_group, 1);	//group which contains that buddy - buggy
+	setenv(ENV_PREFIX "PROTOCOL", protocol_id, 1);	//protocol used to deliver the message. eg.: xmpp, irc,...
+	setenv(ENV_PREFIX "STATUS", status_id, 1);	//unique ID of status. eg.: available, away,...
+	setenv(ENV_PREFIX "STATUS_MSG", status_msg, 1);	//status message set by user
 
 	//Launch job on background
 	answerscripts_job *job = (answerscripts_job*) malloc(sizeof(answerscripts_job));
@@ -195,8 +195,8 @@ static PurplePluginInfo info = {
 
 static void init_plugin(PurplePlugin * plugin) {
 	//Export static environment variables
-	setenv(ENV_PREFIX "AGENT", (char *) purple_core_get_ui(), 1);
-	setenv(ENV_PREFIX "AGENT_VERSION", (char *) purple_core_get_version(), 1);
+	setenv(ENV_PREFIX "AGENT", (char *) purple_core_get_ui(), 1);	//ID of IM client used with answerscripts
+	setenv(ENV_PREFIX "AGENT_VERSION", (char *) purple_core_get_version(), 1);	//Version of client
 }
 
 PURPLE_INIT_PLUGIN(autoanswer, init_plugin, info)

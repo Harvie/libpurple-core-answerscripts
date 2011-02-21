@@ -27,11 +27,21 @@ There are lot of hacks that you can do with this simple framework if you know so
     * Every line that is outputed by this script to it's **STDOUT is sent** as response to message that executed it
     * Following **environment values are passed** to the script:
       * ANSW\_MSG	(text of the message)
-      * ANSW\_FROM	(who sent you message)
-      * ANSW\_FROM_GROUP	(group which contains that buddy)
-      * ANSW\_PROTOCOL	(protocol used to deliver the message. eg.: jabber, irc,...)
+      * ANSW\_FROM	(who sent you the message)
+      * ANSW\_FROM\_GROUP	(group which contains that buddy - buggy)
+      * ANSW\_PROTOCOL	(protocol used to deliver the message. eg.: xmpp, irc,...)
       * ANSW\_STATUS	(unique ID of status. eg.: available, away,...)
       * ANSW\_STATUS\_MSG	(status message set by user)
+      * ANSW\_AGENT	(ID of IM client used with answerscripts)
+      * ANSW\_AGENT\_VERSION	(Version of client)
+      * ANSW\_LOCAL\_NAME	(Name of local user - untested)
+      * ANSW\_LOCAL\_ALIAS	(Alias of local user - untested)
+      * ANSW\_REMOTE\_NAME	(???)
+      * ANSW\_REMOTE\_ALIAS\_ONLY	(buggy)
+      * ANSW\_REMOTE\_SERVER\_ALIAS	(buggy)
+      * ANSW\_REMOTE\_CONTACT\_ALIAS	(buggy)
+      * ANSW\_REMOTE\_LOCAL\_ALIAS	(???)
+      * ANSW\_REMOTE\_ALIAS	(???)
     * **WARNING: You should mind security (don't let attackers to execute their messages/nicks!)**
     * I guess that you will want to use more than one answerscript, so i made such answerscript which will execute all answerscripts in **~/.purple/answerscripts.d**
       * It's quite smart and all you need to do is set the filenames and permissions of answerscripts in that directory properly...
