@@ -66,25 +66,31 @@ static void received_im_msg_cb(PurpleAccount *account, char *who, char *buffer, 
 	//Get message
 	message = purple_markup_strip_html(buffer);
 
-	/* Here are prototypes of some functions interesting to implement github feature request #3
+	//Here are prototypes of some functions interesting to implement github feature request #3
 
-	LOCAL USER:
-	const char* purple_account_get_alias  	(  	const PurpleAccount *   	 account  	 )
-	const gchar* purple_account_get_name_for_display  	(  	const PurpleAccount *   	 account  	 )
-	REMOTE USER (Buddy):
-	const char * 	purple_contact_get_alias (PurpleContact *contact)
-	const char * 	purple_buddy_get_name (const PurpleBuddy *buddy)
-	const char *	purple_buddy_get_alias_only (PurpleBuddy *buddy)
-	const char * 	purple_buddy_get_server_alias (PurpleBuddy *buddy)
-	const char * 	purple_buddy_get_contact_alias (PurpleBuddy *buddy)
-	const char * 	purple_buddy_get_local_alias (PurpleBuddy *buddy)
-	const char * 	purple_buddy_get_alias (PurpleBuddy *buddy)
-	PurpleGroup * 	purple_buddy_get_group (PurpleBuddy *buddy)
-	const char * 	purple_group_get_name (PurpleGroup *group)
-	*/
+	//LOCAL USER:
+	const char* local_alias = purple_account_get_alias(account);
+	const char* local_name = (char *) purple_account_get_name_for_display(account);
+	setenv(ENV_PREFIX "LOCAL_NAME", local_name, 1);
+	setenv(ENV_PREFIX "LOCAL_ALIAS", local_alias, 1);
+
+	//REMOTE USER (Buddy):
+	//const char * 	purple_contact_get_alias (PurpleContact *contact)
+	const char* remote_name = purple_buddy_get_name(buddy);
+	const char* remote_alias_only = purple_buddy_get_alias_only(buddy);
+	const char* remote_server_alias = purple_buddy_get_server_alias(buddy);
+	const char* remote_contact_alias = purple_buddy_get_contact_alias(buddy);
+	const char* remote_local_alias = purple_buddy_get_local_alias(buddy);
+	const char* remote_alias = purple_buddy_get_alias(buddy);
+	setenv(ENV_PREFIX "REMOTE_NAME", remote_name, 1);
+	setenv(ENV_PREFIX "REMOTE_ALIAS_ONLY", remote_alias_only, 1);
+	setenv(ENV_PREFIX "REMOTE_SERVER_ALIAS", remote_server_alias, 1);
+	setenv(ENV_PREFIX "REMOTE_CONTACT_ALIAS", remote_contact_alias, 1);
+	setenv(ENV_PREFIX "REMOTE_LOCAL_ALIAS", remote_local_alias, 1);
+	setenv(ENV_PREFIX "REMOTE_ALIAS", remote_alias, 1);
 
 	//Get buddy group
-	const char *from_group = purple_group_get_name(purple_buddy_get_group(buddy)); //FIXME: returns "\x18" when user does not belong to some group
+	const char *from_group = purple_group_get_name(purple_buddy_get_group(buddy)); //FIXME: purple_group_get_name() returns "\x18" (or random data!) when user does not belong to some group
 
 	//Get protocol ID
 	const char *protocol_id = purple_account_get_protocol_id(account);
