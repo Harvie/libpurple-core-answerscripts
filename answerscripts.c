@@ -194,7 +194,9 @@ static PurplePluginInfo info = {
 };
 
 static void init_plugin(PurplePlugin * plugin) {
-
+	//Export static environment variables
+	setenv(ENV_PREFIX "AGENT", (char *) purple_core_get_ui(), 1);
+	setenv(ENV_PREFIX "AGENT_VERSION", (char *) purple_core_get_version(), 1);
 }
 
 PURPLE_INIT_PLUGIN(autoanswer, init_plugin, info)
