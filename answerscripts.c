@@ -66,28 +66,31 @@ static void received_im_msg_cb(PurpleAccount *account, char *who, char *buffer, 
 	//Get message
 	message = purple_markup_strip_html(buffer);
 
-	//Here are prototypes of some functions interesting to implement github feature request #3
-
 	//LOCAL USER:
 	const char* local_alias = purple_account_get_alias(account);
 	const char* local_name = (char *) purple_account_get_name_for_display(account);
-	setenv(ENV_PREFIX "LOCAL_NAME", local_name, 1);	//Name of local user - untested
-	setenv(ENV_PREFIX "LOCAL_ALIAS", local_alias, 1);	//Alias of local user - untested
 
 	//REMOTE USER (Buddy):
+	//Here are prototypes of some functions interesting to implement github feature request #3
 	//const char * 	purple_contact_get_alias (PurpleContact *contact)
-	const char* remote_name = purple_buddy_get_name(buddy);
-	const char* remote_alias_only = purple_buddy_get_alias_only(buddy);
-	const char* remote_server_alias = purple_buddy_get_server_alias(buddy);
-	const char* remote_contact_alias = purple_buddy_get_contact_alias(buddy);
-	const char* remote_local_alias = purple_buddy_get_local_alias(buddy);
-	const char* remote_alias = purple_buddy_get_alias(buddy);
+	/*
+	const char* remote_name = purple_buddy_get_name(buddy); //correct name to display for a blist chat
+	const char* remote_alias_only = purple_buddy_get_alias_only(buddy); //NULL
+	const char* remote_server_alias = purple_buddy_get_server_alias(buddy);	//NULL
+	const char* remote_contact_alias = purple_buddy_get_contact_alias(buddy);	//NULL
+	const char* remote_local_alias = purple_buddy_get_local_alias(buddy);	//buddy's alias; buddy's contact alias; buddy's user name.
+	*/
+	/*
 	setenv(ENV_PREFIX "REMOTE_NAME", remote_name, 1);	//???
 	setenv(ENV_PREFIX "REMOTE_ALIAS_ONLY", remote_alias_only, 1);	//buggy
 	setenv(ENV_PREFIX "REMOTE_SERVER_ALIAS", remote_server_alias, 1);	//buggy
 	setenv(ENV_PREFIX "REMOTE_CONTACT_ALIAS", remote_contact_alias, 1);	//buggy
 	setenv(ENV_PREFIX "REMOTE_LOCAL_ALIAS", remote_local_alias, 1);	//???
-	setenv(ENV_PREFIX "REMOTE_ALIAS", remote_alias, 1);	//???
+	*/
+
+	//Get buddy alias
+	const char* remote_alias = purple_buddy_get_alias(buddy);
+	if(remote_alias == NULL) remote_alias = "";
 
 	//Get buddy group
 	PurpleGroup *group = purple_buddy_get_group(buddy);
@@ -114,12 +117,16 @@ static void received_im_msg_cb(PurpleAccount *account, char *who, char *buffer, 
 	}
 
 	//Export variables to environment
+	setenv(ENV_PREFIX "ACTION", "IM", 1);	//what happend: im, chat, show setting dialog, event, etc...
 	setenv(ENV_PREFIX "MSG", message, 1);	//text of the message
-	setenv(ENV_PREFIX "FROM", who, 1);	//who sent you the message
-	setenv(ENV_PREFIX "FROM_GROUP", from_group, 1);	//group which contains that buddy
 	setenv(ENV_PREFIX "PROTOCOL", protocol_id, 1);	//protocol used to deliver the message. eg.: xmpp, irc,...
-	setenv(ENV_PREFIX "STATUS", status_id, 1);	//unique ID of status. eg.: available, away,...
-	setenv(ENV_PREFIX "STATUS_MSG", status_msg, 1);	//status message set by user
+	setenv(ENV_PREFIX "R_NAME", who, 1);	//ID of remote user - "buddy"
+	setenv(ENV_PREFIX "R_GROUP", from_group, 1);	//group which contains that buddy OR empty string
+	setenv(ENV_PREFIX "R_ALIAS", remote_alias, 1);	//buddy's alias, server alias, contact alias, username OR empty string
+	setenv(ENV_PREFIX "L_NAME", local_name, 1);	//ID of local user
+	setenv(ENV_PREFIX "L_ALIAS", local_alias, 1);	//Alias of local user OR empty string
+	setenv(ENV_PREFIX "L_STATUS", status_id, 1);	//unique ID of local user's status. eg.: available, away,...
+	setenv(ENV_PREFIX "L_STATUS_MSG", status_msg, 1);	//status message set by local user
 
 	//Launch job on background
 	answerscripts_job *job = (answerscripts_job*) malloc(sizeof(answerscripts_job));
@@ -164,18 +171,14 @@ static PurplePluginInfo info = {
 
 	"core-answerscripts",
 	"AnswerScripts",
-	"0.3.1",
+	"0.4.0",
 	"Framework for hooking scripts to process received messages for libpurple clients",
 	"\nThis plugin will execute script \"~/.purple/" ANSWERSCRIPT "\" "
 		"(or any other executable called \"" ANSWERSCRIPT "\" and found in purple_user_dir()) "
 		"each time when instant message is received.\n"
 		"\n- Any text printed to STDOUT by this script will be sent back as answer to received message."
 		"\n- Following environment values will be set, so script can use them for responding:\n"
-		"\t- ANSW_MSG\n"
-		"\t- ANSW_FROM\n"
-		"\t- ANSW_PROTOCOL\n"
-		"\t- ANSW_STATUS\n"
-		"\t- ANSW_STATUS_MSG\n"
+		"\t- " ENV_PREFIX "* (see documentation or env for more)\n"
 		"\nPlease see sample scripts, documentation, website and source code for more informations...\n"
 		"\n(-; Peace ;-)\n",
 	"Tomas Mudrunka <harvie@email.cz>",
@@ -196,8 +199,8 @@ static PurplePluginInfo info = {
 
 static void init_plugin(PurplePlugin * plugin) {
 	//Export static environment variables
-	setenv(ENV_PREFIX "AGENT", (char *) purple_core_get_ui(), 1);	//ID of IM client used with answerscripts
-	setenv(ENV_PREFIX "AGENT_VERSION", (char *) purple_core_get_version(), 1);	//Version of client
+	setenv(ENV_PREFIX "L_AGENT", (char *) purple_core_get_ui(), 1);	//ID of IM client used with answerscripts
+	setenv(ENV_PREFIX "L_AGENT_VERSION", (char *) purple_core_get_version(), 1);	//Version of client
 }
 
 PURPLE_INIT_PLUGIN(autoanswer, init_plugin, info)

@@ -25,23 +25,19 @@ There are lot of hacks that you can do with this simple framework if you know so
   * Basically
     * Each time you receive message, the main **answerscripts.sh script (answerscripts.exe on M$ Windows) is executed** on background
     * Every line that is outputed by this script to it's **STDOUT is sent** as response to message that executed it
-    * Following **environment values are passed** to the script:
+    * Following **environment values are passed** to the script (ANSW\_L = local user, ANSW\_R = remote user = your buddy who sent the message):
+      * ANSW\_ACTION	(what happend: im, chat, show setting dialog, event, etc...)
       * ANSW\_MSG	(text of the message)
-      * ANSW\_FROM	(who sent you the message)
-      * ANSW\_FROM\_GROUP	(group which contains that buddy)
       * ANSW\_PROTOCOL	(protocol used to deliver the message. eg.: xmpp, irc,...)
-      * ANSW\_STATUS	(unique ID of status. eg.: available, away,...)
-      * ANSW\_STATUS\_MSG	(status message set by user)
-      * ANSW\_AGENT	(ID of IM client used with answerscripts)
-      * ANSW\_AGENT\_VERSION	(Version of client)
-      * ANSW\_LOCAL\_NAME	(Name of local user - untested)
-      * ANSW\_LOCAL\_ALIAS	(Alias of local user - untested)
-      * ANSW\_REMOTE\_NAME	(???)
-      * ANSW\_REMOTE\_ALIAS\_ONLY	(buggy)
-      * ANSW\_REMOTE\_SERVER\_ALIAS	(buggy)
-      * ANSW\_REMOTE\_CONTACT\_ALIAS	(buggy)
-      * ANSW\_REMOTE\_LOCAL\_ALIAS	(???)
-      * ANSW\_REMOTE\_ALIAS	(???)
+      * ANSW\_R\_NAME	(ID of remote user - "buddy")
+      * ANSW\_R\_GROUP	(group which contains that buddy OR empty string)
+      * ANSW\_R\_ALIAS	(buddy's alias, server alias, contact alias, username OR empty string)
+      * ANSW\_L\_NAME	(ID of local user)
+      * ANSW\_L\_ALIAS	(Alias of local user OR empty string)
+      * ANSW\_L\_STATUS	(unique ID of local user's status. eg.: available, away,...)
+      * ANSW\_L\_STATUS\_MSG	(status message set by local user)
+      * ANSW\_L\_AGENT	(ID of IM client used with answerscripts)
+      * ANSW\_L\_AGENT\_VERSION	(Version of client)
     * **WARNING: You should mind security (don't let attackers to execute their messages/nicks!)**
     * I guess that you will want to use more than one answerscript, so i made such answerscript which will execute all answerscripts in **~/.purple/answerscripts.d**
       * It's quite smart and all you need to do is set the filenames and permissions of answerscripts in that directory properly...
@@ -51,7 +47,7 @@ There are lot of hacks that you can do with this simple framework if you know so
 Following answerscript will reply to each incoming message if you are not available. Reply will consist of two messages: one with username of your buddy who sent you a message and text of that message; and second with your status message. Simple huh?
 
     #!/bin/sh
-    [ "$ANSW_STATUS" != 'available' ] && echo "<$ANSW_FROM> $ANSW_MSG" && echo "My status: $ANSW_STATUS_MSG";
+    [ "$ANSW_L_STATUS" != 'available' ] && echo "<$ANSW_R_NAME> $ANSW_MSG" && echo "My status: $ANSW_L_STATUS_MSG";
 
 ##Building & installation
 

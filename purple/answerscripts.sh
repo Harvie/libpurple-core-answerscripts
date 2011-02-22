@@ -17,11 +17,6 @@
 #		- 51-79 executed after delay, multiline output (serial processing)
 #		- 80-99	reserved for future
 
-#legacy support, please do NOT use PURPLE_* variables in new scripts,
-#this will be removed in future releases:
-export PURPLE_FROM="$ANSW_FROM"
-export PURPLE_MSG="$ANSW_MSG"
-
 #this may be modified to use run-parts from coreutils in future (can't get it to work):
 
 dir="$(dirname "$0")"; cd "$dir" #chdir to ~/.purple/ or similar

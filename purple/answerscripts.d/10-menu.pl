@@ -7,10 +7,10 @@ use v5.10; #given/when (if you need to use older PERL, you can find older versio
 given ($ENV{ANSW_MSG}) {
 	when (/^!help$/)	{ print qx{ grep -o 'when \(/[^\$/]*' "$0" | grep -o '!.*' | tr '\n' ',' }; }
 	when (/^!ping$/)	{ print "PONG"; }
-	when (/^!whoami$/)	{ print "You are: $ENV{ANSW_FROM}"; }
-	when (/^!whoareyou$/)	{ print "Hello, my name is $ENV{ANSW_LOCAL_NAME} ;-)"; }
-	when (/^!version$/)	{ print "$ENV{ANSW_AGENT} $ENV{ANSW_AGENT_VERSION}"; }
-	when (/^!status$/)	{ print "[$ENV{ANSW_STATUS}] $ENV{ANSW_STATUS_MSG}"; }
+	when (/^!whoami$/)	{ print "You are: $ENV{ANSW_R_NAME}"; }
+	when (/^!whoareyou$/)	{ print "Hello, my name is $ENV{ANSW_L_NAME} ;-)"; }
+	when (/^!version$/)	{ print "$ENV{ANSW_L_AGENT} $ENV{ANSW_L_AGENT_VERSION}"; }
+	when (/^!status$/)	{ print "[$ENV{ANSW_L_STATUS}] $ENV{ANSW_L_STATUS_MSG}"; }
 	when (/^!(reboot|reset|restart|halt)$/)	{ print "Broadcast message: The system is going down for reboot NOW !!"; }
 	when (/^!google/)	{ print "UTFG Yourself: http://google.com/"; }
 	when (/^!uptime$/)	{ print qx{uptime}; }
