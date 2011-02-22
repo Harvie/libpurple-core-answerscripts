@@ -62,6 +62,7 @@ int answerscripts_process_message_cb(answerscripts_job *job) {
 static void received_im_msg_cb(PurpleAccount *account, char *who, char *buffer, PurpleConversation *conv, PurpleMessageFlags flags, void *data) {
 	if (conv == NULL) conv = purple_conversation_new(PURPLE_CONV_TYPE_IM, account, who); //* A workaround to avoid skipping of the first message as a result on NULL-conv: */
 	PurpleBuddy *buddy = purple_find_buddy(account, who);
+	PurplePresence *presence = purple_buddy_get_presence(buddy);
 
 	//Get message
 	message = purple_markup_strip_html(buffer);
