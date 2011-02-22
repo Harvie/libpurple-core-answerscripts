@@ -71,22 +71,6 @@ static void received_im_msg_cb(PurpleAccount *account, char *who, char *buffer, 
 	const char* local_name = (char *) purple_account_get_name_for_display(account);
 
 	//REMOTE USER (Buddy):
-	//Here are prototypes of some functions interesting to implement github feature request #3
-	//const char * 	purple_contact_get_alias (PurpleContact *contact)
-	/*
-	const char* remote_name = purple_buddy_get_name(buddy); //correct name to display for a blist chat
-	const char* remote_alias_only = purple_buddy_get_alias_only(buddy); //NULL
-	const char* remote_server_alias = purple_buddy_get_server_alias(buddy);	//NULL
-	const char* remote_contact_alias = purple_buddy_get_contact_alias(buddy);	//NULL
-	const char* remote_local_alias = purple_buddy_get_local_alias(buddy);	//buddy's alias; buddy's contact alias; buddy's user name.
-	*/
-	/*
-	setenv(ENV_PREFIX "REMOTE_NAME", remote_name, 1);	//???
-	setenv(ENV_PREFIX "REMOTE_ALIAS_ONLY", remote_alias_only, 1);	//buggy
-	setenv(ENV_PREFIX "REMOTE_SERVER_ALIAS", remote_server_alias, 1);	//buggy
-	setenv(ENV_PREFIX "REMOTE_CONTACT_ALIAS", remote_contact_alias, 1);	//buggy
-	setenv(ENV_PREFIX "REMOTE_LOCAL_ALIAS", remote_local_alias, 1);	//???
-	*/
 
 	//Get buddy alias
 	const char* remote_alias = purple_buddy_get_alias(buddy);
