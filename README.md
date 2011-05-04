@@ -55,6 +55,7 @@ Following answerscript will reply to each incoming message if you are not availa
 
 ###From packages
 - ArchLinux: http://aur.archlinux.org/packages.php?ID=37942
+
 ###Manually
 - The libpurple header files are needed to compile the plugin.
 - To build and install :
