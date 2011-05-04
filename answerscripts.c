@@ -88,10 +88,16 @@ static void received_im_msg_cb(PurpleAccount *account, char *who, char *buffer, 
 	//Get status
 	PurpleStatus *status = purple_account_get_active_status(account);
 	PurpleStatusType *type = purple_status_get_type(status);
+	//remote
+	PurpleStatus *r_status = purple_presence_get_active_status(presence);
+	PurpleStatusType *r_status_type =	purple_status_get_type(r_status);
 
 	//Get status id
 	const char *status_id = NULL;
 	status_id = purple_primitive_get_id_from_type(purple_status_type_get_primitive(type));
+	//remote
+	const char *r_status_id = NULL;
+	r_status_id = purple_primitive_get_id_from_type(purple_status_type_get_primitive(r_status_type));
 
 	//Get status message
 	const char *status_msg = NULL;
@@ -99,6 +105,13 @@ static void received_im_msg_cb(PurpleAccount *account, char *who, char *buffer, 
 		status_msg = purple_status_get_attr_string(status, "message");
 	} else {
 		status_msg = (char *) purple_savedstatus_get_message(purple_savedstatus_get_current());
+	}
+	//remote
+	const char *r_status_msg = NULL;
+	if (purple_status_type_get_attr(r_status_type, "message") != NULL) {
+		r_status_msg = purple_status_get_attr_string(r_status, "message");
+	} else {
+		r_status_msg = "";
 	}
 
 	//Export variables to environment
@@ -108,6 +121,8 @@ static void received_im_msg_cb(PurpleAccount *account, char *who, char *buffer, 
 	setenv(ENV_PREFIX "R_NAME", who, 1);	//ID of remote user - "buddy"
 	setenv(ENV_PREFIX "R_GROUP", from_group, 1);	//group which contains that buddy OR empty string
 	setenv(ENV_PREFIX "R_ALIAS", remote_alias, 1);	//buddy's alias, server alias, contact alias, username OR empty string
+	setenv(ENV_PREFIX "R_STATUS", r_status_id, 1);	//unique ID of remote user's status. eg.: available, away,...
+	setenv(ENV_PREFIX "R_STATUS_MSG", r_status_msg, 1);	//status message set by your buddy
 	setenv(ENV_PREFIX "L_NAME", local_name, 1);	//ID of local user
 	setenv(ENV_PREFIX "L_ALIAS", local_alias, 1);	//Alias of local user OR empty string
 	setenv(ENV_PREFIX "L_STATUS", status_id, 1);	//unique ID of local user's status. eg.: available, away,...

@@ -32,6 +32,8 @@ There are lot of hacks that you can do with this simple framework if you know so
       * ANSW\_R\_NAME	(ID of remote user - "buddy")
       * ANSW\_R\_GROUP	(group which contains that buddy OR empty string)
       * ANSW\_R\_ALIAS	(buddy's alias, server alias, contact alias, username OR empty string)
+      * ANSW\_R\_STATUS	(unique ID of remote user's status. eg.: available, away,...)
+      * ANSW\_R\_STATUS\_MSG	(status message set by your buddy)
       * ANSW\_L\_NAME	(ID of local user)
       * ANSW\_L\_ALIAS	(Alias of local user OR empty string)
       * ANSW\_L\_STATUS	(unique ID of local user's status. eg.: available, away,...)
