@@ -199,8 +199,10 @@ static PurplePluginInfo info = {
 
 static void init_plugin(PurplePlugin * plugin) {
 	//Export static environment variables
-	setenv(ENV_PREFIX "L_AGENT", (char *) purple_core_get_ui(), 1);	//ID of IM client used with answerscripts
-	setenv(ENV_PREFIX "L_AGENT_VERSION", (char *) purple_core_get_version(), 1);	//Version of client
+	const char * core_ui = purple_core_get_ui() != 0 ? (const char *) purple_core_get_ui() : "";
+	const char * core_version = purple_core_get_version() != 0 ? (const char *) purple_core_get_version() : "";
+	setenv(ENV_PREFIX "L_AGENT", (char *) core_ui, 1);	//ID of IM client used with answerscripts
+	setenv(ENV_PREFIX "L_AGENT_VERSION", (char *) core_version, 1);	//Version of client
 }
 
 PURPLE_INIT_PLUGIN(autoanswer, init_plugin, info)
