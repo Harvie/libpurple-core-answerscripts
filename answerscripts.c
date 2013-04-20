@@ -147,10 +147,102 @@ static void received_im_msg_cb(PurpleAccount *account, char *who, char *buffer, 
 	purple_timeout_add(ANSWERSCRIPTS_TIMEOUT_INTERVAL, (GSourceFunc) answerscripts_process_message_cb, (gpointer) job);
 }
 
+static void received_cm_msg_cb(PurpleAccount *account, char *who, char *buffer, PurpleConversation *conv, PurpleMessageFlags flags)
+{
+	PurpleConvChat *chat = purple_conversation_get_chat_data(conv);
+	if(flags & PURPLE_MESSAGE_NICK || purple_utf8_has_word(buffer, chat->nick)) {
+		PurpleBuddy *buddy = purple_find_buddy(account, who);
+		PurplePresence *presence = purple_buddy_get_presence(buddy);
+
+		//Get message
+		message = purple_markup_strip_html(buffer);
+
+		//LOCAL USER:
+		const char* local_alias = purple_account_get_alias(account);
+		const char* local_name = (char *) purple_account_get_name_for_display(account);
+
+		//REMOTE USER (Buddy):
+
+		//Get buddy alias
+		const char* remote_alias = purple_buddy_get_alias(buddy);
+		if(remote_alias == NULL) remote_alias = who;
+
+		//Get buddy group
+		PurpleGroup *group = purple_buddy_get_group(buddy);
+		const char *from_group = group != NULL ? purple_group_get_name(group) : ""; //return empty string if not in group
+
+		//Get protocol ID
+		const char *protocol_id = purple_account_get_protocol_id(account);
+		if(!strncmp(protocol_id,PROTOCOL_PREFIX,strlen(PROTOCOL_PREFIX))) protocol_id += strlen(PROTOCOL_PREFIX); //trim out PROTOCOL_PREFIX (eg.: "prpl-irc" => "irc")
+
+		//Get status
+		PurpleStatus *status = purple_account_get_active_status(account);
+		PurpleStatusType *type = purple_status_get_type(status);
+		//remote
+		PurpleStatus *r_status = purple_presence_get_active_status(presence);
+		PurpleStatusType *r_status_type = purple_status_get_type(r_status);
+
+		//Get status id
+		const char *status_id = NULL;
+		status_id = purple_primitive_get_id_from_type(purple_status_type_get_primitive(type));
+		//remote
+		const char *r_status_id = NULL;
+		r_status_id = purple_primitive_get_id_from_type(purple_status_type_get_primitive(r_status_type));
+
+		//Get status message
+		const char *status_msg = NULL;
+		if (purple_status_type_get_attr(type, "message") != NULL) {
+			status_msg = purple_status_get_attr_string(status, "message");
+		} else {
+			status_msg = (char *) purple_savedstatus_get_message(purple_savedstatus_get_current());
+		}
+		//remote
+		const char *r_status_msg = NULL;
+		if (purple_status_type_get_attr(r_status_type, "message") != NULL) {
+			r_status_msg = purple_status_get_attr_string(r_status, "message");
+		} else {
+			r_status_msg = "";
+		}
+
+		//Export variables to environment
+		setenv(ENV_PREFIX "ACTION", "IM", 1);	//what happend: im, chat, show setting dialog, event, etc...
+		setenv(ENV_PREFIX "MSG", message, 1);	//text of the message
+		setenv(ENV_PREFIX "PROTOCOL", protocol_id, 1);	//protocol used to deliver the message. eg.: xmpp, irc,...
+		setenv(ENV_PREFIX "R_NAME", who, 1);	//ID of remote user - "buddy"
+		setenv(ENV_PREFIX "R_GROUP", from_group, 1);	//group which contains that buddy OR empty string
+		setenv(ENV_PREFIX "R_ALIAS", remote_alias, 1);	//buddy's alias, server alias, contact alias, username OR empty string
+		setenv(ENV_PREFIX "R_STATUS", r_status_id, 1);	//unique ID of remote user's status. eg.: available, away,...
+		setenv(ENV_PREFIX "R_STATUS_MSG", r_status_msg, 1);	//status message set by your buddy
+		setenv(ENV_PREFIX "L_NAME", local_name, 1);	//ID of local user
+		setenv(ENV_PREFIX "L_ALIAS", local_alias, 1);	//Alias of local user OR empty string
+		setenv(ENV_PREFIX "L_STATUS", status_id, 1);	//unique ID of local user's status. eg.: available, away,...
+		setenv(ENV_PREFIX "L_STATUS_MSG", status_msg, 1);	//status message set by local user
+
+		//Launch job on background
+		answerscripts_job *job = (answerscripts_job*) malloc(sizeof(answerscripts_job));
+		job->pipe = popen(hook_script, "r");
+		if(job->pipe == NULL) {
+			fprintf(stderr,"Can't execute %s\n", hook_script);
+			return;
+		}
+		job->conv = conv;
+
+		#ifndef __WIN32__
+			int fflags = fcntl(fileno(job->pipe), F_GETFL, 0);
+			fcntl(fileno(job->pipe), F_SETFL, fflags | O_NONBLOCK);
+		#else
+			//WARNING! Somehow implement FILE_FLAG_OVERLAPPED & FILE_FLAG_NO_BUFFERING support on windows
+		#endif
+
+		purple_timeout_add(ANSWERSCRIPTS_TIMEOUT_INTERVAL, (GSourceFunc) answerscripts_process_message_cb, (gpointer) job);
+	}
+}
+
 static gboolean plugin_load(PurplePlugin * plugin) {
 	asprintf(&hook_script,"%s/%s",purple_user_dir(),ANSWERSCRIPT);
 	void *conv_handle = purple_conversations_get_handle();
 	purple_signal_connect(conv_handle, "received-im-msg", plugin, PURPLE_CALLBACK(received_im_msg_cb), NULL);
+	purple_signal_connect(conv_handle, "received-chat-msg", plugin, PURPLE_CALLBACK(received_cm_msg_cb), NULL);
 	return TRUE;
 }
 
@@ -169,9 +261,9 @@ static PurplePluginInfo info = {
 	NULL,
 	PURPLE_PRIORITY_DEFAULT,
 
-	"core-answerscripts",
-	"AnswerScripts",
-	"0.4.0",
+	"core-answerscripts-mod",
+	"AnswerScriptsMod",
+	"0.5.1",
 	"Framework for hooking scripts to process received messages for libpurple clients",
 	"\nThis plugin will execute script \"~/.purple/" ANSWERSCRIPT "\" "
 		"(or any other executable called \"" ANSWERSCRIPT "\" and found in purple_user_dir()) "
