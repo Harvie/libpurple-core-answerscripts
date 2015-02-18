@@ -2,6 +2,6 @@
 #Debug
 (
 echo "DATE: $(date)";
-env | grep '^ANSW_' | sort;
+env | grep -a '^ANSW_' | sort;
 echo =============================================
 ) >&2;
