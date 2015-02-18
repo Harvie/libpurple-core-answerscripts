@@ -8,3 +8,6 @@
   * Make this answerscript API stable
   * Port whole idea and plugin to other (non-purple) libraries/clients while maintaining compatibility of existing answerscripts and API
     * probably move answerscripts out of ~/.purple/ to ~/.config/answ/ or something, so they can be shared between multiple agents
+  * Figure out why is first reply always followed by some ugly binary mess
+    * visible in irssi
+    * but it happens even for messages not sent by this plugin, so probably not my fault

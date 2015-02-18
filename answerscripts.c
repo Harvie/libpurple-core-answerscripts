@@ -49,9 +49,14 @@ int answerscripts_process_message_cb(answerscripts_job *job) {
 			&& (errno == EWOULDBLOCK || errno == EAGAIN) //WARNING! Not compatible with windows :-(
 		) return 1;
 
-		for(i=0;response[i];i++) if(response[i]=='\n') response[i]=0;
-		if(response[0]!='\0') purple_conv_im_send(purple_conversation_get_im_data(conv), response);
-
+		for(i=0;response[i];i++) if(response[i]=='\n') response[i]='\0';
+		if(response[0]!='\0') {
+			if(purple_conversation_get_type(conv) == PURPLE_CONV_TYPE_CHAT) {
+				purple_conv_chat_send(purple_conversation_get_chat_data(conv), response);
+			} else {
+				purple_conv_im_send(purple_conversation_get_im_data(conv), response);
+			}
+		}
 		if(!feof(pipe)) return 1;
 	}
 	pclose(pipe);
@@ -88,6 +93,9 @@ static void received_msg_cb(PurpleAccount *account, char *who, char *buffer, Pur
 	const char* local_name = (char *) purple_account_get_name_for_display(account);
 	const char* local_alias = purple_account_get_alias(account);
 	if(local_alias == NULL) local_alias = local_name;
+
+	//Do not respond to messages sent by myself
+	if(strcmp(local_name, who) == 0) return;
 
 	//Was my nick said?
 	char *highlighted;
@@ -200,7 +208,7 @@ static PurplePluginInfo info = {
 
 	"core-answerscripts",
 	"AnswerScripts",
-	"0.5.2",
+	"0.5.3",
 	"Framework for hooking scripts to process received messages for libpurple clients",
 	"\nThis plugin will execute script \"~/.purple/" ANSWERSCRIPT "\" "
 		"(or any other executable called \"" ANSWERSCRIPT "\" and found in purple_user_dir()) "
