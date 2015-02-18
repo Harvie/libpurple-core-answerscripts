@@ -1,5 +1,5 @@
 #!/bin/sh
-#Debug
+#Debug to pidgin's STDERR
 (
 echo "DATE: $(date)";
 env | grep -a '^ANSW_' | sort;
