@@ -140,13 +140,19 @@ static void received_msg_cb(PurpleAccount *account, char *who, char *buffer, Pur
 	} else {
 		status_msg = (char *) purple_savedstatus_get_message(purple_savedstatus_get_current());
 	}
+	//If purple_status_get_attr_string returns NULL for whatever reason, also as a precaution against purple_savedstatus_get_message doing the same
+	if (status_msg == NULL) {
+            status_msg = "";
+        }
 	//remote
 	const char *r_status_msg = NULL;
 	if (purple_status_type_get_attr(r_status_type, "message") != NULL) {
 		r_status_msg = purple_status_get_attr_string(r_status, "message");
-	} else {
-		r_status_msg = "";
 	}
+	//If purple_status_get_attr_string returns NULL for whatever reason
+	if (r_status_msg == NULL) {
+            r_status_msg = "";
+        }
 
 	//Export variables to environment
 	setenv(ENV_PREFIX "ACTION", action, 1);	//what happend: IM/CHAT/UNKNOWN, show setting dialog, event, etc...
