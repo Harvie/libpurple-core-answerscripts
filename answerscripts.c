@@ -248,12 +248,12 @@ static PurplePluginInfo info = {
 
 static void init_plugin(PurplePlugin * plugin) {
 	//Export static environment variables
-	#ifndef __x86_64__ //Workaround for x86_64 (where this causes problems for unknown reason)
+	//#ifndef __x86_64__ //Workaround for x86_64 (where this causes problems for unknown reason)
 		const char * core_ui = check_null(purple_core_get_ui());
 		const char * core_version = check_null(purple_core_get_version());
 		setenv(ENV_PREFIX "L_AGENT", (char *) core_ui, 1);	//ID of IM client used with answerscripts
 		setenv(ENV_PREFIX "L_AGENT_VERSION", (char *) core_version, 1);	//Version of client
-	#endif
+	//#endif
 }
 
 PURPLE_INIT_PLUGIN(autoanswer, init_plugin, info)
