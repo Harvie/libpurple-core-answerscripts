@@ -46,7 +46,10 @@ typedef struct {
 } answerscripts_job;
 
 const void *check_null(const void *pointer) {
-	if(pointer == NULL) return "";
+	if(pointer == NULL) {
+		fprintf(stderr, "NULL pointer detected in answerscripts!\n");
+		return "";
+	}
 	return pointer;
 }
 
