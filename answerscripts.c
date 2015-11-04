@@ -1,3 +1,4 @@
+#define _GNU_SOURCE
 //#define __WIN32__
 #ifndef __WIN32__
 	#define ANSWERSCRIPT_EXT ""
@@ -23,12 +24,18 @@
 
 /* Purple plugin */
 #define PURPLE_PLUGINS
-#include <libpurple/debug.h>
-#include <libpurple/version.h>
+#include <libpurple/account.h>
+#include <libpurple/blist.h>
 #include <libpurple/conversation.h>
+#include <libpurple/core.h>
+#include <libpurple/debug.h>
 #include <libpurple/plugin.h>
+#include <libpurple/savedstatuses.h>
 #include <libpurple/signals.h>
+#include <libpurple/status.h>
 #include <libpurple/util.h>
+#include <libpurple/value.h>
+#include <libpurple/version.h>
 
 char *message = NULL;
 char *hook_script = NULL;
@@ -37,6 +44,11 @@ typedef struct {
   FILE *pipe;
   PurpleConversation *conv;
 } answerscripts_job;
+
+const void *check_null(const void *pointer) {
+	if(pointer == NULL) return "";
+	return pointer;
+}
 
 int answerscripts_process_message_cb(answerscripts_job *job) {
 	int i;
@@ -136,14 +148,14 @@ static void received_msg_cb(PurpleAccount *account, char *who, char *buffer, Pur
 	//Get status message
 	const char *status_msg = NULL;
 	if (purple_status_type_get_attr(type, "message") != NULL) {
-		status_msg = purple_status_get_attr_string(status, "message");
+		status_msg = check_null(purple_status_get_attr_string(status, "message"));
 	} else {
-		status_msg = (char *) purple_savedstatus_get_message(purple_savedstatus_get_current());
+		status_msg = (char *) check_null(purple_savedstatus_get_message(purple_savedstatus_get_current()));
 	}
 	//remote
 	const char *r_status_msg = NULL;
 	if (purple_status_type_get_attr(r_status_type, "message") != NULL) {
-		r_status_msg = purple_status_get_attr_string(r_status, "message");
+		r_status_msg = check_null(purple_status_get_attr_string(r_status, "message"));
 	} else {
 		r_status_msg = "";
 	}
@@ -237,8 +249,8 @@ static PurplePluginInfo info = {
 static void init_plugin(PurplePlugin * plugin) {
 	//Export static environment variables
 	#ifndef __x86_64__ //Workaround for x86_64 (where this causes problems for unknown reason)
-		const char * core_ui = purple_core_get_ui() != 0 ? (const char *) purple_core_get_ui() : "";
-		const char * core_version = purple_core_get_version() != 0 ? (const char *) purple_core_get_version() : "";
+		const char * core_ui = check_null(purple_core_get_ui());
+		const char * core_version = check_null(purple_core_get_version());
 		setenv(ENV_PREFIX "L_AGENT", (char *) core_ui, 1);	//ID of IM client used with answerscripts
 		setenv(ENV_PREFIX "L_AGENT_VERSION", (char *) core_version, 1);	//Version of client
 	#endif
