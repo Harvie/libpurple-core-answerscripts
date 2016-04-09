@@ -1,5 +1,6 @@
 #What TODO?
   * Add way to block messages (eg. based on return value?), so you can write antispam filters using answerscripts.
+    * grep -o "[А-Яа-яЁё]" :-/
   * GUI for managing answerscripts with following features
     * list answerscripts
     * enable/disable answerscripts (by chmod +x/-x on them)
