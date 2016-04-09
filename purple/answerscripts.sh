@@ -47,3 +47,6 @@ if test -d "$dir"; then
 
 	done;
 fi
+
+#return 0 = do not block the message
+exit 0
