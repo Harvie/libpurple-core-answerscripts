@@ -79,7 +79,7 @@ int answerscripts_process_message_cb(answerscripts_job *job) {
 	return 0;
 }
 
-static void received_msg_cb(PurpleAccount *account, char *who, char *buffer, PurpleConversation *conv, PurpleMessageFlags flags, void *data) {
+static char received_msg_cb(PurpleAccount *account, char *who, char *buffer, PurpleConversation *conv, PurpleMessageFlags flags, void *data) {
 	if (conv == NULL) conv = purple_conversation_new(PURPLE_CONV_TYPE_IM, account, who); //* A workaround to avoid skipping of the first message as a result on NULL-conv: */
 
 	PurpleBuddy *buddy = purple_find_buddy(account, who);
@@ -110,7 +110,7 @@ static void received_msg_cb(PurpleAccount *account, char *who, char *buffer, Pur
 	if(local_alias == NULL) local_alias = local_name;
 
 	//Do not respond to messages sent by myself
-	if(strcmp(local_name, who) == 0) return;
+	if(strcmp(local_name, who) == 0) return 0;
 
 	//Was my nick said?
 	char *highlighted;
@@ -184,7 +184,7 @@ static void received_msg_cb(PurpleAccount *account, char *who, char *buffer, Pur
 	job->pipe = popen(hook_script, "r");
 	if(job->pipe == NULL) {
 		fprintf(stderr,"Can't execute %s\n", hook_script);
-		return;
+		return 0;
 	}
 	job->conv = conv;
 
@@ -196,11 +196,15 @@ static void received_msg_cb(PurpleAccount *account, char *who, char *buffer, Pur
 	#endif
 
 	purple_timeout_add(ANSWERSCRIPTS_TIMEOUT_INTERVAL, (GSourceFunc) answerscripts_process_message_cb, (gpointer) job);
+
+	return 0;
 }
 
 static gboolean plugin_load(PurplePlugin * plugin) {
 	asprintf(&hook_script,"%s/%s",purple_user_dir(),ANSWERSCRIPT);
 	void *conv_handle = purple_conversations_get_handle();
+	//purple_signal_connect(conv_handle, "receiving-im-msg", plugin, PURPLE_CALLBACK(received_msg_cb), NULL);
+	//purple_signal_connect(conv_handle, "receiving-chat-msg", plugin, PURPLE_CALLBACK(received_msg_cb), NULL);
 	purple_signal_connect(conv_handle, "received-im-msg", plugin, PURPLE_CALLBACK(received_msg_cb), NULL);
 	purple_signal_connect(conv_handle, "received-chat-msg", plugin, PURPLE_CALLBACK(received_msg_cb), NULL);
 	return TRUE;
