@@ -110,7 +110,7 @@ static char received_msg_cb(PurpleAccount *account, char *who, char *buffer, Pur
 	if(local_alias == NULL) local_alias = local_name;
 
 	//Do not respond to messages sent by myself
-	if(strcmp(local_name, who) == 0) return 0;
+	if (flags & PURPLE_MESSAGE_SEND) return 0; 
 
 	//Was my nick said?
 	char *highlighted;
